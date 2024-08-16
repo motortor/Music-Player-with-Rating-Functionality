@@ -1,0 +1,442 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>music player</title>
+
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<script src="js/jquery-1.11.1.min.js"></script>
+
+<style>
+    #pagination {
+        text-align: center;
+        margin-bottom: 20px; /* 调整垂直居中时的上边距 */
+    }
+
+    #prevPageBtn,
+    #nextPageBtn {
+        margin: 0 10px; /* 调整前后按钮之间的水平间距 */
+    }
+
+    #currentPage {
+        color: white;
+    }
+
+    #topSection {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #333;
+        color: white;
+    }
+
+    #userIdInput {
+        margin-right: 10px;
+        width: 200px;
+    }
+
+    #saveButton,
+    #outputButton,
+    #clearButton {
+        width: 125px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+
+</head>
+<body>
+<div id="topSection">
+    <div>
+        <label for="userIdInput">USER ID：</label>
+        <input type="text" id="userIdInput" />
+    </div>
+    <button id="saveButton" onclick="savePlayInfo()">SAVE ID</button>
+    <button id="outputButton" onclick="mergeFiles()">OUTPUT DATA</button>
+    <button id="clearButton" onclick="clearFiles()">CLEAR</button>
+
+    <script>
+        function mergeFiles() {
+            // 创建一个XMLHttpRequest对象
+            var xhr = new XMLHttpRequest();
+            var userId = $("#userIdInput").val();
+
+            // 设置请求的类型、URL 以及是否异步处理
+            xhr.open('POST', 'output.php', true);
+
+            // 设置请求头
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+            // 设置请求完成后的回调函数
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    // 显示弹窗
+                    alert("Output successfully!");
+                }
+            };
+
+            // 发送请求
+            xhr.send('output=true&userId=' + userId);
+        }
+
+        function clearFiles() {
+            // 创建一个XMLHttpRequest对象
+            var xhr = new XMLHttpRequest();
+
+            // 设置请求的类型、URL 以及是否异步处理
+            xhr.open('POST', 'clear.php', true);
+
+            // 设置请求头
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+            // 设置请求完成后的回调函数
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    // 显示弹窗
+                    alert("Files cleared successfully!");
+                }
+            };
+
+            // 发送请求
+            xhr.send('clear=true');
+
+            // 清除userIdInput输入框内容
+            $("#userIdInput").val('');
+        }
+    </script>
+</div>
+
+<div class="audio-main w3ls">
+    <div class="audio-record-list">
+        <div class="profile">
+            <div class="profile-top wthree">
+                <div class="pic-sec">
+                    <div class="pic">
+                        <img src="images/head.jpg" alt=""/>
+                    </div>
+                    <div class="pic_info">
+                        <h2 id="currentMusicTitle"></h2>
+                        <label for="ratingSelect" style="color: white;">Rating：</label>
+                        <select id="ratingSelect">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <button onclick="submitRating()">Submit</button>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+        <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+            <div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">
+                <div class="jp-type-playlist">
+                    <div class="jp-gui jp-interface">
+                        <div class="jp-controls">    
+                            <button class="jp-play" role="button" tabindex="0">play</button>
+                        </div>
+                        <div class="jp-progress">
+                            <div class="jp-seek-bar">
+                                <div class="jp-play-bar"></div>
+                            </div>
+                        </div>
+                        <div class="jp-volume-controls">
+                            <button class="jp-mute" role="button" tabindex="0">mute</button>
+                            <button class="jp-volume-max" role="button" tabindex="0">max volume</button>
+                            <div class="jp-volume-bar">
+                                <div class="jp-volume-bar-value"></div>
+                            </div>
+                        </div>
+                        <div class="jp-time-holder">
+                            <div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>
+                            <div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>
+                        </div>
+                        
+                    </div>
+                    <div class="jp-playlist">
+                        <ul>
+                            <li>&nbsp;</li>
+                        </ul>
+                    </div>
+                    <div class="jp-no-solution">
+                        <span>Update Required</span>
+                        To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<div id="pagination">
+    <button id="prevPageBtn">Previous Page</button>
+    <span id="currentPage">Page <span id="currentPageNumber">1</span> of <span id="totalPages">1</span></span>
+    <button id="nextPageBtn">Next Page</button>
+</div>
+
+<link href="css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.jplayer.min.js"></script>
+<script type="text/javascript" src="js/jplayer.playlist.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+    var currentMusicTitleElement = $('#currentMusicTitle');
+    var ratingSelect = $('#ratingSelect');
+    var currentPage = 1; // 初始页码
+
+    // 初始化一个对象来存储评分
+    var ratings = {};
+
+    function loadPlaylist(page) {
+        $.ajax({
+            type: "GET",
+            url: "get_playlist.php?page=" + page, // 传递当前页码
+            dataType: "json",
+            success: function (data, textStatus, jqXHR) {
+                var totalPages = jqXHR.getResponseHeader('X-Total-Pages');
+
+                // 更新总页数显示
+                $("#totalPages").text(totalPages);
+
+                var player = $("#jquery_jplayer_1");
+
+                // 清空原有的播放列表
+                player.jPlayer("clearPlaylist");
+                $("#jp_container_1 .jp-playlist ul").empty();
+
+                new jPlayerPlaylist({
+                    jPlayer: "#jquery_jplayer_1",
+                    cssSelectorAncestor: "#jp_container_1"
+                },data, {
+                    swfPath: "../../dist/jplayer",
+                    supplied: "wav, mp3",
+                    wmode: "window",
+                    useStateClassSkin: true,
+                    autoBlur: false,
+                    smoothPlayBar: true,
+                    keyEnabled: true,
+                    loop: false,
+                    // 重新加载第一首歌曲
+                    play: function(event) {
+                        var currentMusicTitle = event.jPlayer.status.media.title;
+                        currentMusicTitleElement.text(currentMusicTitle);
+                        var currentRating = ratings[currentMusicTitle] || '';
+                        ratingSelect.val(currentRating);
+
+                        // 记录开始播放时间
+                        var playTimestamp = new Date().getTime(); // 获取当前时间戳
+                        localStorage.setItem('currentMusicPlayTime', playTimestamp); // 存储时间戳到本地存储
+                        savePlayInfoToTextFile(currentMusicTitle, playTimestamp); // 将播放信息写入文本文件
+                    },
+                    
+                    // 新增代码：在 jPlayer 的 setmedia 事件中记录切换播放时间
+                    setmedia: function(event) {
+                        var previousMusicTitle = event.jPlayer.status.media.title;
+                        var playTimestamp = localStorage.getItem('currentMusicPlayTime');
+                        var pauseTimestamp = new Date().getTime();
+
+                        // 新增代码：记录结束播放时间（切换时触发）
+                        if (previousMusicTitle && playTimestamp) {
+                            localStorage.removeItem('currentMusicPlayTime');
+                            saveEndInfoToTextFile(previousMusicTitle, pauseTimestamp);
+                        }
+                    },
+
+                    // 在 jPlayer 的 pause 事件中记录结束播放时间
+                    pause: function(event) {
+                        var currentMusicTitle = event.jPlayer.status.media.title;
+                        var playTimestamp = localStorage.getItem('currentMusicPlayTime'); // 获取开始播放时间戳
+                        var pauseTimestamp = new Date().getTime(); // 获取结束播放时间戳
+
+                        // 记录结束播放时间
+                        localStorage.removeItem('currentMusicPlayTime'); // 移除开始播放时间戳
+                        saveEndInfoToTextFile(currentMusicTitle, pauseTimestamp); // 将播放信息写入文本文件
+                    }
+                });
+        
+            let _html = '';
+            let i = 0;
+                // 手动更新播放列表的 HTML
+            $.each(data, function (index, track) {
+                i = index+1;
+                _html += '<li><div><a href="javascript:;" class="jp-playlist-item-remove" style="display: none;">×</a><a href="javascript:;" class="jp-playlist-item" tabindex="0">'+track.title+'</a></div></li>';
+            });
+            $("#jp_container_1 .jp-playlist ul").html(_html);
+        },
+        error: function (error) {
+            console.error("Error getting playlist!");
+        }
+    }); 
+        window.savePlayInfo = function() {
+            var userId = $("#userIdInput").val();
+            saveIDToFile();
+        };
+
+        function saveIDToFile() {
+            $.ajax({
+                type: "POST",
+                success: function(response) {
+                    alert("ID saved successfully!");
+                },
+                error: function(error) {
+                    alert("ERROR!");
+                }
+            });
+        }
+
+        window.submitRating = function() {
+            var currentMusicTitle = $('#currentMusicTitle').text();
+            var rating = $('#ratingSelect').val();
+            ratings[currentMusicTitle] = rating;
+
+            saveRatingsToFile();
+        };
+
+        function saveRatingsToFile() {
+            var ratingsText = "";
+            for (var title in ratings) {
+                ratingsText += title + ": " + ratings[title] + "\n";
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "save_ratings.php",
+                data: { ratings: ratingsText },
+                success: function(response) {
+                    alert("Ratings saved successfully!");
+                },
+                error: function(error) {
+                    alert("Error saving ratings!");
+                }
+            });
+        }
+
+        function savePlayInfoToTextFile(title, startTimestamp) {
+            var startDate = new Date(startTimestamp);
+            var formattedStartDateTime = formatDate(startDate);
+            var playInfoText = title + ": " + formattedStartDateTime;
+
+            // 使用 jQuery 执行简单的 AJAX 调用来保存播放信息到服务器端文件
+            $.ajax({
+                type: "POST",
+                url: "save_play_info.php", // 替换为处理文件写入的服务器端脚本
+                data: { playInfo: playInfoText},
+                success: function(response) {
+                    console.log("Play info saved successfully!");
+                },
+                error: function(error) {
+                    console.error("Error saving play info!");
+                }
+            });
+        }
+
+        function saveEndInfoToTextFile(title, endTimestamp) {
+            var endDate = new Date(endTimestamp);
+            var formattedEndDateTime = formatDate(endDate);
+            var playInfoText = " - " + formattedEndDateTime + "\n";
+
+            // 使用 jQuery 执行简单的 AJAX 调用来保存播放信息到服务器端文件
+            $.ajax({
+                type: "POST",
+                url: "save_play_info.php", // 替换为处理文件写入的服务器端脚本
+                data: { playInfo: playInfoText},
+                success: function(response) {
+                    console.log("Play info saved successfully!");
+                },
+                error: function(error) {
+                    console.error("Error saving play info!");
+                }
+            });
+        }
+
+        // 辅助函数：格式化日期时间
+        function formatDate(date) {
+            var year = date.getFullYear();
+            var month = padZero(date.getMonth() + 1);
+            var day = padZero(date.getDate());
+            var hours = padZero(date.getHours());
+            var minutes = padZero(date.getMinutes());
+            var seconds = padZero(date.getSeconds());
+            var milliseconds = padZero(date.getMilliseconds(), 3);
+
+            return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+        }
+
+        // 辅助函数：在数字前添加零（用于保证两位或三位数字）
+        function padZero(num, length = 2) {
+            return ('0'.repeat(length) + num).slice(-length);
+        }
+    }
+
+    // 更新总页数
+    function updateTotalPages(totalPages) {
+        $("#totalPages").text(totalPages);
+    }
+
+    // 检查翻页按钮状态
+    function checkPaginationButtons() {
+        $("#prevPageBtn").prop("disabled", currentPage <= 1);
+        $("#nextPageBtn").prop("disabled", currentPage >= totalPages);
+    }
+
+    function updateCurrentPage() {
+        $("#currentPageNumber").text(currentPage);
+        checkPaginationButtons();
+    }
+
+    // 初始化加载第一页的播放列表
+    loadPlaylist(currentPage);
+
+    // 翻页按钮点击事件
+    $("#nextPageBtn").on("click", function () {
+        currentPage++;
+        loadPlaylist(currentPage);
+        updateCurrentPage(); // 更新当前页数显示
+        checkPaginationButtons(); // 检查并更新翻页按钮状态
+    });
+
+    $("#prevPageBtn").on("click", function () {
+        if (currentPage > 1) {
+            currentPage--;
+            loadPlaylist(currentPage);
+            updateCurrentPage(); // 更新当前页数显示
+            checkPaginationButtons(); // 检查并更新翻页按钮状态
+        }
+    });
+
+    function updateCurrentPage() {
+        $("#currentPageNumber").text(currentPage);
+    }
+
+    function checkPaginationButtons() {
+        // 获取总页数
+        var totalPages = parseInt($("#totalPages").text());
+
+        // 禁用或启用下一页按钮
+        if (currentPage >= totalPages) {
+            $("#nextPageBtn").prop("disabled", true);
+        } else {
+            $("#nextPageBtn").prop("disabled", false);
+        }
+
+        // 禁用或启用上一页按钮
+        if (currentPage <= 1) {
+            $("#prevPageBtn").prop("disabled", true);
+        } else {
+            $("#prevPageBtn").prop("disabled", false);
+        }
+    }
+
+});
+</script>
+<!-- 代码 结束 -->
+
+</body>
+</html>
