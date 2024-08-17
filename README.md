@@ -5,3 +5,13 @@
 
 播放器的页面和具体功能如下图所示：
 ![image](https://github.com/motortor/Music-Player-with-Rating-Functionality/blob/main/screenshot.png)
+
+播放完音乐后，点击页面上方的“OUTPUT DATA”按钮，即可将每首音乐的ID、播放和结束时间戳、对应的评分输出到以“实验者ID”命名的TXT文件里。
+输出结果的格式如下为例：
+```
+1lp3AkKObSaXUQj2: 2024/08/16 18:18:49.686 - 2024/08/16 18:19:19.979  fitness: 1
+1NqEMzdMVUt7GvP3: 2024/08/16 18:18:16.101 - 2024/08/16 18:18:46.286  fitness: 5
+0tGyfM8g4zni2Fpw: 2024/08/16 18:17:42.813 - 2024/08/16 18:18:13.213  fitness: 4
+0nqt0LfiOiVMAcoQ: 2024/08/16 18:17:05.982 - 2024/08/16 18:17:36.410  fitness: 3
+0RtweAx2UHLd5Bwr: 2024/08/16 18:16:29.550 - 2024/08/16 18:16:59.997  fitness: 2
+```
